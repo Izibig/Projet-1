@@ -1,5 +1,3 @@
-export const maxDuration = 60;
-
 import { NextResponse } from "next/server";
 import { type Impact } from "@prisma/client";
 import { createClient } from "@/lib/supabase/server";
