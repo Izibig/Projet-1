@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+
+# Environment files — ne jamais committer les secrets
+.env
+.env.local
+.env.*.local
+
+# Prisma generated (regenerated via prisma generate)
+# prisma/migrations est volontairement tracké (source of truth)
+
+# TypeScript
+tsconfig.tsbuildinfo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Vercel
+.vercel
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

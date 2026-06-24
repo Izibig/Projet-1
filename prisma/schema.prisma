@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")        // pooler Supabase (port 6543)
+  directUrl = env("DIRECT_URL")          // connexion directe (port 5432) pour les migrations
+}
+
+// L'id correspond à auth.users.id de Supabase (jamais géré par Prisma)
+model Agency {
+  id         String   @id @db.Uuid
+  email      String   @unique
+  name       String
+  logoUrl    String?  @map("logo_url")
+  brandColor String   @default("#4f46e5") @map("brand_color")
+  sites      Site[]
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@map("agencies")
+}
+
+model Site {
+  id        String   @id @default(uuid()) @db.Uuid
+  agencyId  String   @map("agency_id") @db.Uuid
+  agency    Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  name      String
+  url       String
+  scans     Scan[]
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("sites")
+}
+
+model Scan {
+  id              String      @id @default(uuid()) @db.Uuid
+  siteId          String      @map("site_id") @db.Uuid
+  site            Site        @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  status          ScanStatus  @default(PENDING)
+  score           Int?        // 0–100, null tant que non terminé
+  violationsCount Int         @default(0) @map("violations_count")
+  violations      Violation[]
+  createdAt       DateTime    @default(now()) @map("created_at")
+  completedAt     DateTime?   @map("completed_at")
+
+  @@map("scans")
+}
+
+model Violation {
+  id           String          @id @default(uuid()) @db.Uuid
+  scanId       String          @map("scan_id") @db.Uuid
+  scan         Scan            @relation(fields: [scanId], references: [id], onDelete: Cascade)
+  ruleId       String          @map("rule_id")        // ex: "color-contrast"
+  impact       Impact
+  description  String                                  // texte axe "help"
+  helpUrl      String          @map("help_url")
+  htmlSnippet  String          @map("html_snippet")    // node.html fautif
+  target       String                                  // sélecteur CSS du node
+  aiSuggestion String?         @map("ai_suggestion")   // null tant que non demandé
+  status       ViolationStatus @default(OPEN)          // historique de correction
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime        @updatedAt @map("updated_at")
+
+  @@map("violations")
+}
+
+enum ScanStatus {
+  PENDING
+  RUNNING
+  DONE
+  ERROR
+}
+
+enum Impact {
+  CRITICAL
+  SERIOUS
+  MODERATE
+  MINOR
+}
+
+enum ViolationStatus {
+  OPEN
+  FIXED
+  IGNORED
+}
