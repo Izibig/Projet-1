@@ -1,7 +1,1 @@
-{
-  "functions": {
-    "app/api/scans/route.ts": {
-      "maxDuration": 60
-    }
-  }
-}
+{}
