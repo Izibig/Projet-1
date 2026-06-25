@@ -1,9 +1,9 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { LayoutDashboard, Settings, LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
 import { signOutAction } from "@/app/(auth)/actions";
-import { Button } from "@/components/ui/button";
 
 export default async function DashboardLayout({
   children,
@@ -14,37 +14,59 @@ export default async function DashboardLayout({
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
   if (!user) redirect("/login");
 
   const agency = await prisma.agency.findUnique({ where: { id: user.id } });
   if (!agency) redirect("/login");
 
   return (
-    <div className="flex min-h-screen">
-      <aside className="flex w-60 flex-col border-r bg-card px-4 py-6">
-        <div className="mb-6 truncate text-sm font-semibold">{agency.name}</div>
-        <nav className="flex-1 space-y-1">
+    <div className="flex min-h-screen bg-[#F9FAFB]">
+      <aside className="flex w-56 shrink-0 flex-col border-r border-[#E5E7EB] bg-white px-3 py-5">
+        {/* Logo */}
+        <div className="mb-6 px-3">
+          <span className="text-lg font-bold tracking-tight text-[#111827]">Clario</span>
+        </div>
+
+        {/* Agency name */}
+        <div className="mb-4 px-3">
+          <p className="truncate text-xs font-medium text-[#6B7280]">{agency.name}</p>
+        </div>
+
+        {/* Nav */}
+        <nav className="flex-1 space-y-0.5">
           <Link
             href="/dashboard"
-            className="block rounded-md px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground"
+            className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-[#374151] transition-colors hover:bg-[#F3F4F6]"
           >
+            <LayoutDashboard className="h-4 w-4 shrink-0 text-[#6B7280]" />
             Sites
           </Link>
           <Link
             href="/settings"
-            className="block rounded-md px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground"
+            className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-[#374151] transition-colors hover:bg-[#F3F4F6]"
           >
-            Réglages
+            <Settings className="h-4 w-4 shrink-0 text-[#6B7280]" />
+            Marque blanche
           </Link>
         </nav>
-        <form action={signOutAction}>
-          <Button variant="outline" size="sm" className="w-full">
+
+        {/* Sign out */}
+        <form action={signOutAction} className="mt-4">
+          <button
+            type="submit"
+            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-[#6B7280] transition-colors hover:bg-[#F3F4F6] hover:text-[#111827]"
+          >
+            <LogOut className="h-4 w-4 shrink-0" />
             Déconnexion
-          </Button>
+          </button>
         </form>
       </aside>
-      <main className="flex-1 p-8">{children}</main>
+
+      <main className="flex-1 overflow-auto">
+        <div className="mx-auto max-w-5xl px-8 py-8">
+          {children}
+        </div>
+      </main>
     </div>
   );
 }
