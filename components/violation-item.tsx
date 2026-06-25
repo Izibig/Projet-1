@@ -41,7 +41,7 @@ export default function ViolationItem({ violation }: ViolationItemProps) {
         method: "POST",
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Erreur");
+      if (!res.ok) throw new Error(data.detail ?? data.error ?? "Erreur");
       setSuggestion(data.aiSuggestion);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Erreur");
