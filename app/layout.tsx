@@ -7,8 +7,8 @@ import { Toaster } from "@/components/ui/sonner";
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
-  title: "Le Gardien d'Accessibilité",
-  description: "Scans d'accessibilité et suggestions IA pour agences web",
+  title: "Clario — Audits d'accessibilité web",
+  description: "Auditez, corrigez et rapportez l'accessibilité de vos sites clients avec l'IA.",
 };
 
 export default function RootLayout({
