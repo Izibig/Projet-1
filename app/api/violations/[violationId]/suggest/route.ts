@@ -25,11 +25,18 @@ export async function POST(
     return NextResponse.json({ aiSuggestion: violation.aiSuggestion });
   }
 
-  const aiSuggestion = await suggestFix({
-    ruleId: violation.ruleId,
-    description: violation.description,
-    htmlSnippet: violation.htmlSnippet,
-  });
+  let aiSuggestion: string;
+  try {
+    aiSuggestion = await suggestFix({
+      ruleId: violation.ruleId,
+      description: violation.description,
+      htmlSnippet: violation.htmlSnippet,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("[suggest] Anthropic error:", message, error);
+    return NextResponse.json({ error: "Génération IA échouée", detail: message }, { status: 500 });
+  }
 
   await prisma.violation.update({
     where: { id: violation.id },
