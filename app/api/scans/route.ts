@@ -76,7 +76,8 @@ export async function POST(request: Request) {
       where: { id: scan.id },
       data: { status: "ERROR" },
     });
-    console.error("Scan error:", error);
-    return NextResponse.json({ error: "Scan échoué" }, { status: 500 });
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("[scans] Scan error:", message, error);
+    return NextResponse.json({ error: "Scan échoué", detail: message }, { status: 500 });
   }
 }
